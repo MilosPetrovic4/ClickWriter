@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import tkinter.font as tkfont
 import win32gui
+import win32api
 from helpers import get_hwnd_by_title, send_click, list_open_windows
 from worker import start_worker, stop_worker
 
@@ -61,8 +62,42 @@ def start_process():
 def stop_process():
     stop_worker()
 
+def test_click():
+    try:
+        x = int(test_x_entry.get())
+        y = int(test_y_entry.get())
+    except ValueError:
+        print("Invalid Input", "X and Y must be integers.")
+        return
+
+    hwnd = get_hwnd_by_title(selected_title.get())
+    if not hwnd:
+        print("No Window Selected", "Please select a window first.")
+        return
+
+    send_click(hwnd, x, y)  
+    left, top, _, _ = win32gui.GetWindowRect(hwnd)
+    win32api.SetCursorPos((left + x, top + y))
+    print("Success", f"Clicked at ({x}, {y})")
+
 tk.Button(root, text="Start", command=start_process).pack(pady=5)
 tk.Button(root, text="Stop", command=stop_process).pack(pady=5)
+
+# ------------ TEST CLICK SECTION ------------ #
+test_frame = tk.LabelFrame(root, text="Test Click", padx=10, pady=10)
+test_frame.pack(pady=15, fill="x")
+
+tk.Label(test_frame, text="X:").grid(row=0, column=0, padx=5, pady=5)
+test_x_entry = tk.Entry(test_frame, width=10)
+test_x_entry.grid(row=0, column=1, padx=5, pady=5)
+
+tk.Label(test_frame, text="Y:").grid(row=0, column=2, padx=5, pady=5)
+test_y_entry = tk.Entry(test_frame, width=10)
+test_y_entry.grid(row=0, column=3, padx=5, pady=5)
+
+tk.Button(test_frame, text="Test Click", command=test_click).grid(
+    row=0, column=5, columnspan=4, pady=10
+)
 
 # ------------ CODE EDITOR WITH LINE NUMBERS ------------ #
 editor_frame = tk.Frame(root)

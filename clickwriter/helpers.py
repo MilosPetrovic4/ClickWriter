@@ -49,6 +49,15 @@ def send_click(hwnd, rel_x, rel_y):
     win32gui.SendMessage(hwnd, win32con.WM_LBUTTONUP, 0, lparam)
 
 # ------------------------------------------
+# Send hold to window via HWND
+# ------------------------------------------
+def send_hold(hwnd, rel_x, rel_y, hold_time):
+    lparam = win32api.MAKELONG(rel_x, rel_y)
+    win32gui.SendMessage(hwnd, win32con.WM_LBUTTONDOWN, win32con.MK_LBUTTON, lparam)
+    time.sleep(hold_time)
+    win32gui.SendMessage(hwnd, win32con.WM_LBUTTONUP, 0, lparam)
+
+# ------------------------------------------
 # Get the Window HWND by Window Title
 # ------------------------------------------
 def get_hwnd_by_title(title):
