@@ -6,8 +6,6 @@ import win32process
 import time
 import random
 
-CLASH_PROCESS_NAME = "Clash of Clans - ShortKestrel35935"
-
 # ------------------------------------------
 # Get PID of a process by name
 # ------------------------------------------
@@ -37,9 +35,15 @@ def get_hwnd_from_pid(pid):
 # ------------------------------------------
 # Send click to window via HWND
 # ------------------------------------------
-def send_click(hwnd, x, y):
-    lparam = win32api.MAKELONG(x, y)
+def send_click(hwnd, rel_x, rel_y):
+    # left, top, right, bottom = win32gui.GetWindowRect(hwnd)
 
+    # abs_x = left + rel_x
+    # abs_y = top + rel_y
+
+    # win32api.SetCursorPos((abs_x, abs_y))
+
+    lparam = win32api.MAKELONG(rel_x, rel_y)
     win32gui.SendMessage(hwnd, win32con.WM_LBUTTONDOWN, win32con.MK_LBUTTON, lparam)
     time.sleep(0.05)
     win32gui.SendMessage(hwnd, win32con.WM_LBUTTONUP, 0, lparam)
@@ -52,29 +56,45 @@ def get_hwnd_by_title(title):
     return hwnd if hwnd != 0 else None
 
 # ------------------------------------------
+# Get all Window Titles on the system
+# ------------------------------------------
+def list_open_windows():
+    windows = []
+
+    def callback(hwnd, _):
+        if win32gui.IsWindowVisible(hwnd):
+            title = win32gui.GetWindowText(hwnd)
+            if title.strip():
+                windows.append((hwnd, title))
+        return True
+
+    win32gui.EnumWindows(callback, None)
+    return windows
+
+# ------------------------------------------
 # Example usage
 # ------------------------------------------
-if __name__ == "__main__":
-    process_title = "Clash of Clans - ShortKestrel35935"
-    hwnd = get_hwnd_by_title(process_title)
+# if __name__ == "__main__":
+#     process_title = "Clash of Clans - ShortKestrel35935"
+#     hwnd = get_hwnd_by_title(process_title)
 
-    while(True):
-        window = win32gui.GetWindowRect(hwnd)
+#     while(True):
+#         window = win32gui.GetWindowRect(hwnd)
 
-        left_bar_x = window[0]
-        top_bar_y = window[1]
-        right_bar_x = window[2]
-        bottom_bar_y = window[3]
+#         left_bar_x = window[0]
+#         top_bar_y = window[1]
+#         right_bar_x = window[2]
+#         bottom_bar_y = window[3]
 
         # Click Attack button
-        send_click(hwnd, left_bar_x + 20, bottom_bar_y - 150)
+        # send_click(hwnd, left_bar_x + 20, bottom_bar_y - 150)
 
-        time.sleep(random.uniform(2, 4))
+        # time.sleep(random.uniform(2, 4))
 
-        # Click Find a Match button
-        send_click(hwnd, left_bar_x + 100, bottom_bar_y - 300)
+        # # Click Find a Match button
+        # send_click(hwnd, left_bar_x + 100, bottom_bar_y - 300)
 
-        time.sleep(random.uniform(5, 7))
+        # time.sleep(random.uniform(5, 7))
     
 
 
