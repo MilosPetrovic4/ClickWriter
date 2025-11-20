@@ -1,10 +1,10 @@
 import tkinter as tk
 from tkinter import ttk
 import tkinter.font as tkfont
-import win32gui
-import win32api
 from helpers import get_hwnd_by_title, send_click, list_open_windows
 from worker import start_worker, stop_worker
+from tkinter import filedialog
+import win32api, win32gui
 
 # ------------------------------------------------------------
 # Creates a popup allowing the user to select a window
@@ -20,7 +20,7 @@ def open_window_selector():
     listbox = tk.Listbox(popup, width=50)
     listbox.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
 
-    for hwnd, title in windows:
+    for _, title in windows:
         listbox.insert(tk.END, f"{title}")
 
     def submit_selection():
@@ -31,6 +31,7 @@ def open_window_selector():
         value = listbox.get(selected[0])
 
         selected_title.set(value)
+        print(selected_title.get())
         popup.destroy()
 
     # Submit Button
@@ -43,11 +44,52 @@ root = tk.Tk()
 root.title("Bot Setup")
 root.geometry("400x700")
 
+# ----- MENU BAR -----
+menu_bar = tk.Menu(root)
+root.config(menu=menu_bar)
+
+file_menu = tk.Menu(menu_bar, tearoff=0)
+menu_bar.add_cascade(label="File", menu=file_menu)
+
+def import_file():
+    file_path = filedialog.askopenfilename(
+        title="Open File",
+        filetypes=[("Text Files", "*.txt"), ("All Files", "*.*")]
+    )
+    if not file_path:
+        return
+
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        code_box.delete("1.0", "end")
+        code_box.insert("1.0", content)
+
+    except Exception as e:
+        print("Error", f"Failed to open file:\n{e}")
+
+def save_file():
+    file_path = filedialog.asksaveasfilename(
+        title="Save File As",
+        defaultextension=".txt",
+        filetypes=[("Text Files", "*.txt"), ("All Files", "*.*")]
+    )
+    if not file_path:
+        return
+
+    try:
+        content = code_box.get("1.0", "end")
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write(content)
+    except Exception as e:
+        print("Error", f"Failed to save file:\n{e}")
+
+file_menu.add_command(label="Import File", command=import_file)
+file_menu.add_command(label="Save File", command=save_file)
+
 # ------------ LABELS ------------ #
 selected_title = tk.StringVar(value="No window selected")
-
-label = tk.Label(root, text="Selected Window:")
-label.pack(pady=10)
 
 result_label = tk.Label(root, textvariable=selected_title, wraplength=350)
 result_label.pack(pady=10)
