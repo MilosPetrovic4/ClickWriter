@@ -17,6 +17,7 @@ def get_pid(process_name):
             return proc.info["pid"]
     return None
 
+
 # ------------------------------------------
 # Get main window handle from PID
 #
@@ -36,6 +37,7 @@ def get_hwnd_from_pid(pid):
     win32gui.EnumWindows(callback, None)
     return hwnd_list[0] if hwnd_list else None
 
+
 # ------------------------------------------
 # Send click to window via HWND
 #
@@ -47,6 +49,7 @@ def send_click(hwnd, rel_x, rel_y):
     win32gui.SendMessage(hwnd, win32con.WM_LBUTTONDOWN, win32con.MK_LBUTTON, lparam)
     time.sleep(0.05)
     win32gui.SendMessage(hwnd, win32con.WM_LBUTTONUP, 0, lparam)
+
 
 # ------------------------------------------
 # Send hold to window via HWND
@@ -77,8 +80,6 @@ def human_click(hwnd, rel_x, rel_y, variance=3):
 
     final_x = rel_x + var_x
     final_y = rel_y + var_y
-
-    print("Human Click at:", final_x, final_y)
 
     send_click(hwnd, final_x, final_y)
 
@@ -173,12 +174,6 @@ def random_point_in_quad(p1, p2, p3, p4):
 # p1, p2, p3, p4 - tuples defining the quadrilateral vertices
 # ------------------------------------------
 def click_random_in_quad(hwnd, p1, p2, p3, p4):
-    """
-    Clicks at a random point inside the quadrilateral created by 4 points.
-    
-    Points must be tuples: (x, y)
-    """
-
     x, y = random_point_in_quad(p1, p2, p3, p4)
 
     lparam = win32api.MAKELONG(x, y)
@@ -187,8 +182,7 @@ def click_random_in_quad(hwnd, p1, p2, p3, p4):
                          win32con.MK_LBUTTON, lparam)
     win32gui.SendMessage(hwnd, win32con.WM_LBUTTONUP, 0, lparam)
 
-    return (x, y)  # return clicked point if needed
-
+    return (x, y)
 
 
 # ------------------------------------------
