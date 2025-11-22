@@ -40,11 +40,14 @@ def handle_wait(_, parts):
 
     time.sleep(random.uniform(t_min, t_max))
 
+
+# ------------------------------------------------------------
+# handle random point on line command
+#
+# hwnd - window handle
+# parts - list of command parts
+# ------------------------------------------------------------
 def handle_random_point_on_line(hwnd, parts):
-    """
-    Returns a random point on the line segment between p1 and p2.
-    p1 and p2 must be tuples: (x, y)
-    """
     if len(parts) != 5:
         print("Invalid hold command: ", parts)
         return
@@ -84,6 +87,12 @@ def handle_hold(hwnd, parts):
     send_hold(hwnd, x, y, t)
 
 
+# ------------------------------------------------------------
+# handle harea command
+#
+# hwnd - window handle
+# parts - list of command parts
+# ------------------------------------------------------------
 def handle_harea(hwnd, parts):
     """
     Expected format:
@@ -104,10 +113,8 @@ def handle_harea(hwnd, parts):
     p3 = (coords[4], coords[5])
     p4 = (coords[6], coords[7])
 
-    clicked_point = click_random_in_quad(hwnd, p1, p2, p3, p4)
+    click_random_in_quad(hwnd, p1, p2, p3, p4)
 
-    # Optional debug
-    print("Clicked inside area at:", clicked_point)
 
 # ------------------------------------------------------------
 # handle humanized click command

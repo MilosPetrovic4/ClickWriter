@@ -30,7 +30,6 @@ def click_loop(get_code_callback, window_title):
     ]
 
     hwnd = get_hwnd_by_title(window_title)
-    print("hwnd:", hwnd)
 
     while running:
         for line in lines:

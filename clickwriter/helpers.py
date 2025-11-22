@@ -120,8 +120,14 @@ def hold_and_drag(hwnd, start_x, start_y, end_x, end_y, duration=0.5, steps=20):
     win32gui.SendMessage(hwnd, win32con.WM_LBUTTONUP, 0, end_lparam)
     
 
+# ------------------------------------------
+# Random Point in Polygon
+# Checks if a point is inside a polygon using the ray casting algorithm.
+#
+# x, y   - point coordinates
+# poly   - list of (x, y) tuples defining the polygon vertices
+# ------------------------------------------
 def point_in_polygon(x, y, poly):
-    """Ray casting algorithm to check if a point is inside a polygon."""
     num = len(poly)
     j = num - 1
     inside = False
@@ -136,9 +142,13 @@ def point_in_polygon(x, y, poly):
 
     return inside
 
-
+# ------------------------------------------
+# Random Point in Quadrilateral
+# Generates a random point inside a quadrilateral defined by 4 points.
+#
+# p1, p2, p3, p4 - tuples defining the quadrilateral vertices
+# ------------------------------------------
 def random_point_in_quad(p1, p2, p3, p4):
-    """Returns a random point inside the quadrilateral defined by 4 points."""
     poly = [p1, p2, p3, p4]
 
     # Compute bounding box
@@ -155,6 +165,13 @@ def random_point_in_quad(p1, p2, p3, p4):
             return x, y
 
 
+# ------------------------------------------
+# Click Random in Quadrilateral
+# Clicks at a random point inside the quadrilateral defined by 4 points.
+#
+# hwnd          - window handle
+# p1, p2, p3, p4 - tuples defining the quadrilateral vertices
+# ------------------------------------------
 def click_random_in_quad(hwnd, p1, p2, p3, p4):
     """
     Clicks at a random point inside the quadrilateral created by 4 points.
@@ -182,6 +199,7 @@ def click_random_in_quad(hwnd, p1, p2, p3, p4):
 def get_hwnd_by_title(title):
     hwnd = win32gui.FindWindow(None, title)
     return hwnd if hwnd != 0 else None
+
 
 # ------------------------------------------
 # Get all Window Titles on the system
