@@ -1,10 +1,8 @@
 import tkinter as tk
-from tkinter import ttk
-import tkinter.font as tkfont
 from helpers import get_hwnd_by_title, send_click, list_open_windows
 from worker import start_worker, stop_worker
-from tkinter import filedialog
 import win32api, win32gui
+import customtkinter as ctk
 
 # ------------------------------------------------------------
 # Creates a popup allowing the user to select a window
@@ -18,10 +16,10 @@ def open_window_selector():
 
     # Listbox to show windows
     listbox = tk.Listbox(popup, width=50)
-    listbox.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
+    listbox.pack(padx=10, pady=10, fill=ctk.BOTH, expand=True)
 
     for _, title in windows:
-        listbox.insert(tk.END, f"{title}")
+        listbox.insert(ctk.END, f"{title}")
 
     def submit_selection():
         selected = listbox.curselection()
@@ -35,14 +33,16 @@ def open_window_selector():
         popup.destroy()
 
     # Submit Button
-    submit_btn = ttk.Button(popup, text="Submit", command=submit_selection)
+    submit_btn = ctk.CTkButton(popup, text="Submit", command=submit_selection)
     submit_btn.pack(pady=10)
 
 
 # ---------------- MAIN UI ---------------- #
-root = tk.Tk()
+# root = tk.Tk()
+root = ctk.CTk()
 root.title("Bot Setup")
 root.geometry("400x700")
+# root._set_appearance_mode("dark")
 
 # ----- MENU BAR -----
 menu_bar = tk.Menu(root)
@@ -52,7 +52,7 @@ file_menu = tk.Menu(menu_bar, tearoff=0)
 menu_bar.add_cascade(label="File", menu=file_menu)
 
 def import_file():
-    file_path = filedialog.askopenfilename(
+    file_path = ctk.filedialog.askopenfilename(
         title="Open File",
         filetypes=[("Text Files", "*.txt"), ("All Files", "*.*")]
     )
@@ -70,7 +70,7 @@ def import_file():
         print("Error", f"Failed to open file:\n{e}")
 
 def save_file():
-    file_path = filedialog.asksaveasfilename(
+    file_path = ctk.filedialog.asksaveasfilename(
         title="Save File As",
         defaultextension=".txt",
         filetypes=[("Text Files", "*.txt"), ("All Files", "*.*")]
@@ -89,13 +89,13 @@ file_menu.add_command(label="Import File", command=import_file)
 file_menu.add_command(label="Save File", command=save_file)
 
 # ------------ LABELS ------------ #
-selected_title = tk.StringVar(value="No window selected")
+selected_title = ctk.StringVar(value="No window selected")
 
-result_label = tk.Label(root, textvariable=selected_title, wraplength=350)
+result_label = ctk.CTkLabel(root, textvariable=selected_title, wraplength=350)
 result_label.pack(pady=10)
 
 # ------------ BUTTONS ------------ #
-select_button = ttk.Button(root, text="Select Window", command=open_window_selector)
+select_button = ctk.CTkButton(root, text="Select Window", command=open_window_selector)
 select_button.pack(pady=20)
 
 def start_process():
@@ -122,44 +122,64 @@ def test_click():
     win32api.SetCursorPos((left + x, top + y))
     print("Success", f"Clicked at ({x}, {y})")
 
-tk.Button(root, text="Start", command=start_process).pack(pady=5)
-tk.Button(root, text="Stop", command=stop_process).pack(pady=5)
+ctk.CTkButton(root, text="Start", command=start_process).pack(pady=5)
+ctk.CTkButton(root, text="Stop", command=stop_process).pack(pady=5)
 
 # ------------ TEST CLICK SECTION ------------ #
-test_frame = tk.LabelFrame(root, text="Test Click", padx=10, pady=10)
-test_frame.pack(pady=15, fill="x")
+test_frame = ctk.CTkFrame(root, corner_radius=10)
+test_frame.pack(pady=15, fill="x", padx=10)
 
-tk.Label(test_frame, text="X:").grid(row=0, column=0, padx=5, pady=5)
-test_x_entry = tk.Entry(test_frame, width=10)
-test_x_entry.grid(row=0, column=1, padx=5, pady=5)
-
-tk.Label(test_frame, text="Y:").grid(row=0, column=2, padx=5, pady=5)
-test_y_entry = tk.Entry(test_frame, width=10)
-test_y_entry.grid(row=0, column=3, padx=5, pady=5)
-
-tk.Button(test_frame, text="Test Click", command=test_click).grid(
-    row=0, column=5, columnspan=4, pady=10
+# Title label (replacement for LabelFrame title)
+ctk.CTkLabel(test_frame, text="Test Click", font=ctk.CTkFont(size=14, weight="bold")).grid(
+    row=0, column=0, columnspan=6, pady=(0, 10)
 )
 
+# X Label + Entry
+ctk.CTkLabel(test_frame, text="X:").grid(row=1, column=0, padx=5, pady=5, sticky="e")
+test_x_entry = ctk.CTkEntry(test_frame, width=80)
+test_x_entry.grid(row=1, column=1, padx=5, pady=5)
+
+# Y Label + Entry
+ctk.CTkLabel(test_frame, text="Y:").grid(row=1, column=2, padx=5, pady=5, sticky="e")
+test_y_entry = ctk.CTkEntry(test_frame, width=80)
+test_y_entry.grid(row=1, column=3, padx=5, pady=5)
+
+# Test Click Button
+ctk.CTkButton(test_frame, text="Test Click", command=test_click).grid(
+    row=1, column=4, columnspan=2, padx=10, pady=10
+)
+
+# Optional: More consistent layout
+test_frame.grid_columnconfigure(5, weight=1)
+
 # ------------ CODE EDITOR WITH LINE NUMBERS ------------ #
-editor_frame = tk.Frame(root)
-editor_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+editor_frame = ctk.CTkFrame(root)
+editor_frame.pack(fill=ctk.BOTH, expand=True, padx=10, pady=10)
 
-code_font = tkfont.Font(family="Consolas", size=11)
+code_font = ctk.CTkFont(family="Consolas", size=11)
 
-line_numbers = tk.Text(editor_frame, width=4, padx=5, takefocus=0, 
-                       border=0, background="#f0f0f0", state="disabled",
-                       font=code_font)
-line_numbers.pack(side=tk.LEFT, fill=tk.Y)
+line_numbers = ctk.CTkTextbox(
+    editor_frame,
+    width=40,
+    height=400,
+    activate_scrollbars=False,
+    font=code_font
+)
+line_numbers.configure(state="disabled")
+line_numbers.pack(side=ctk.LEFT, fill=ctk.Y)
 
-scrollbar = tk.Scrollbar(editor_frame, width=25)
-scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+scrollbar = ctk.CTkScrollbar(editor_frame, width=25)
+scrollbar.pack(side=ctk.RIGHT, fill=ctk.Y)
 
-code_box = tk.Text(editor_frame, wrap="none", font=code_font,
-                   yscrollcommand=scrollbar.set)
-code_box.pack(fill=tk.BOTH, expand=True)
+code_box = ctk.CTkTextbox(
+    editor_frame,
+    wrap="none",
+    font=code_font,
+    yscrollcommand=scrollbar.set
+)
+code_box.pack(fill=ctk.BOTH, expand=True)
 
-scrollbar.config(command=code_box.yview)
+scrollbar.configure(command=code_box.yview)
 
 # Update line numbers when text changes
 def update_line_numbers(event=None):
@@ -168,10 +188,10 @@ def update_line_numbers(event=None):
     line_count = int(code_box.index('end-1c').split('.')[0])
     lines = "\n".join(str(i) for i in range(1, line_count + 1))
 
-    line_numbers.config(state="normal")
-    line_numbers.delete("1.0", tk.END)
+    line_numbers.configure(state="normal")
+    line_numbers.delete("1.0", ctk.END)
     line_numbers.insert("1.0", lines)
-    line_numbers.config(state="disabled")
+    line_numbers.configure(state="disabled")
 
 
 code_box.bind("<KeyRelease>", update_line_numbers)
